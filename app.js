@@ -1,14 +1,16 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const models= require('./models/users');
+const modelsignup= require('./models/user');
 const sequelize=require('./util/database');
 const app = express();
-const UserRoute=require('./routes/users');
+const UsersignupRoute=require('./routes/usersignup');
+const UserloginRoute=require('./routes/userlogin');
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json()); 
-app.use('/user',UserRoute);
+app.use('/user',UsersignupRoute);
+app.use('/user',UserloginRoute);
 sequelize
 .sync()
 .then(result =>{
