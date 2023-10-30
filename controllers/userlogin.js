@@ -1,4 +1,5 @@
 const Users = require('../models/user');
+const bcrypt = require('bcrypt');
 
 exports.createUserlogin = async (req, res, next) => {
     const Email = req.body.email;
@@ -7,7 +8,7 @@ exports.createUserlogin = async (req, res, next) => {
         const existingUser = await Users.findOne({ where: { email: Email } });
 
         if (existingUser) {
-            const samepassword= await Users.findOne({where:{password:Password}})
+            const samepassword= await bcrypt.compare(Password, existingUser.password);
                 if (samepassword){
                     return res.status(200).json({ alert: 'User is logged in sucessfully' });
                 }else{
