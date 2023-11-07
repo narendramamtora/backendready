@@ -1,11 +1,11 @@
 const Users = require('../models/user');
 const bcrypt=require('bcrypt');
+const Jwt=require('jsonwebtoken');
 
 exports.createUser = async (req, res, next) => {
     const Name = req.body.name;
     const Email = req.body.email;
     const Password = req.body.password;
-
     try {
         const existingUser = await Users.findOne({ where: { email: Email } });
 
@@ -20,11 +20,11 @@ exports.createUser = async (req, res, next) => {
                 }
             await Users.create({
                 name: Name,
-                email: Email,
+                email: Email, 
                 password: hash
             });
             console.log('email created in controllers 200');
-            return res.status(200).json({ message: 'Email sent successfully of control 200' });
+            return res.status(200).json({ message: 'Email sent successfully of control 200'});
         });
       }
     } catch (err) {

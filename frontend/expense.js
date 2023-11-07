@@ -22,7 +22,9 @@ async function Storedata(event) {
   showExpenseOnScreen(obj1);
 
   try {
-    const response = await axios.post(`${baseUrl}/add-expense`, obj);
+    const token= localStorage.getItem('token');
+    console.log('this is the token of post in the expense',token);
+    const response = await axios.post(`${baseUrl}/add-expense`, obj,{headers:{"Authorization":token}});
     console.log('POST request successful:', response.data);
     
     document.getElementById('descrip').value = '';
@@ -35,7 +37,8 @@ async function Storedata(event) {
 
 window.addEventListener("DOMContentLoaded", async () => {
   try {
-    const res = await axios.get(`${baseUrl}/all-expenses`);
+    const token= localStorage.getItem('token');
+    const res = await axios.get(`${baseUrl}/all-expenses`,{headers:{"Authorization":token}});
     console.log(res);
     for (const expense of res.data) {
       showExpenseOnScreen(expense);
@@ -56,7 +59,8 @@ async function showExpenseOnScreen(obj) {
   deleteButton.value = "Delete Expense";
   deleteButton.onclick = async () => {
     try {
-      await axios.delete(`${baseUrl}/delete-expense/${obj.id}`);
+      const token= localStorage.getItem('token');
+      await axios.delete(`${baseUrl}/delete-expense/${obj.id}`,{headers:{"Authorization":token}});
       console.log('expense deleted successfully');
       expensesList.removeChild(listItem);
     } catch (err) {

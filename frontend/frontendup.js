@@ -23,6 +23,10 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             if (response.status === 200) {
                 console.log(response.data.message);
+                Name.value = '';
+                Email.value = '';
+                Password.value = '';
+
             } else if (response.status === 201) {
                 console.log(response.data.error);
                 const errorMessage = document.createElement('div');
