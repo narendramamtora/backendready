@@ -1,4 +1,5 @@
 const Expense = require('../models/expense');
+const User= require('../models/user');
 
 exports.getAllExpenses = async (req, res, next) => {
   try {
@@ -53,25 +54,17 @@ exports.postDeleteExpense = async (req, res, next) => {
   }
 };
     
+exports.getPremiumStatus = async (req, res, next) => {
+  try {
+    const user = await User.findOne({ where: { id: req.user.id } });
 
-    // exports.getExpenses = async (req, res, next) => {
-    //   try {
-    //     const expenses = await Expense.findAll();
-    //     res.render('expense', {
-    //       prods: expenses,
-    //       pageTitle: 'All Expenses',
-    //       path: '/expenses',
-    //     });
-    //   } catch (err) {
-    //     console.log(err);
-    //   }
-    // };
-    
-
-// exports.getAddExpense = (req, res, next) => {
-//   res.render('expense/edit-expense', {
-//     pageTitle: 'Add Expense',
-//     path: '/add-expense',
-//     editing: false,
-//   });
-// };
+    if (user) {
+      res.json({ isPremiumUser: user.isPremiumUser });
+    } else {
+      res.status(404).json({ message: 'User not found.' });
+    }
+  } catch (error) {
+    console.error('Error fetching premium status:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};

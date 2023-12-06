@@ -34,20 +34,6 @@ async function Storedata(event) {
   }
 }
 
-window.addEventListener("DOMContentLoaded", async () => {
-  try {
-    const token= localStorage.getItem('token');
-    const res = await axios.get(`${baseUrl}/all-expenses`,{headers:{"Authorization":token}});
-    console.log(res);
-    for (const expense of res.data) {
-      showExpenseOnScreen(expense);
-      // console.log(expense)
-    }
-  } catch (err) {
-    console.log(err);
-  }
-});
-
 document.getElementById('rzpbutton').onclick = async function (e) {
   const token = localStorage.getItem('token');
     const response = await axios.get('http://localhost:3000/purchase/premiummember', { headers: { "Authorization": token } });
@@ -64,6 +50,7 @@ document.getElementById('rzpbutton').onclick = async function (e) {
             status:'success'
           }, { headers: { "Authorization": token } });
           alert('you are a premium user');
+          replaceButtonWithMessage();
         }
       };
       const rzpl = new Razorpay(options);
@@ -84,14 +71,94 @@ document.getElementById('rzpbutton').onclick = async function (e) {
 
   }
 
+  function showLeaderBoard() {
+    const leaderboardHeading = document.getElementById("leaderboard");
+  
+    if (leaderboardHeading.style.display === "none" || leaderboardHeading.style.display === "") {
+      leaderboardHeading.style.display = "block"; // Set display to block when button is clicked
+    } else {
+      leaderboardHeading.style.display = "none"; // Hide if already visible
+    }
+  }
+
+  function replaceButtonWithMessage() {
+    const rzpButton = document.getElementById('rzpbutton');
+    if (rzpButton) {
+        rzpButton.parentNode.removeChild(rzpButton);
+        const premiumContainer = document.createElement('div');
+        const premiumMessage = document.createElement('span');
+        premiumMessage.textContent = 'You are a premium user';
+        premiumContainer.appendChild(premiumMessage);
+        const showLeaderBoardButton = document.createElement("input");
+        showLeaderBoardButton.type = "button";
+        showLeaderBoardButton.value = "ShowLeaderBoard";
+        showLeaderBoardButton.onclick = async () => {
+          try {
+            showLeaderBoard()
+            console.log('you clicked show leader successfully');
+            try {
+              const token= localStorage.getItem('token');
+              const res = await axios.get(`http://localhost:3000/premium/all-expenses`,{headers:{"Authorization":token}}); 
+              console.log('Expenses:', res.data.expenses);
+              console.log('Users:', res.data.users);
+              for (const expenseWithUser of res.data.expenses) {
+                showLeadersOnScreen(expenseWithUser);
+              }
+            } catch (err) {
+              console.log(err);
+            }
+          } catch (err) {
+            console.log(err);
+          }
+        };
+        premiumContainer.appendChild(showLeaderBoardButton);
+        // Append the container at the desired location
+        const expensesList = document.getElementById("my-form");
+        expensesList.appendChild(premiumContainer);
+    } else {
+        console.error("Element with ID 'rzpbutton' not found.");
+    }
+}
+
+window.addEventListener("DOMContentLoaded", async () => {
+    try {
+    const token = localStorage.getItem('token');
+    const premiumStatusResponse = await axios.get(`${baseUrl}/premium-status`, {
+      headers: { "Authorization": token }
+    });
+  const isPremiumUser = premiumStatusResponse.data.isPremiumUser;
+    if (isPremiumUser) {
+      replaceButtonWithMessage();
+    } else {
+      // Show the Razorpay button
+      const rzpButton = document.getElementById('rzpbutton');
+      rzpButton.style.display = 'block';
+    }
+  } catch (err) {
+    console.error('Error checking premium status:', err);
+  }
+
+ try {
+    const token= localStorage.getItem('token');
+    const res = await axios.get(`${baseUrl}/all-expenses`,{headers:{"Authorization":token}});
+    console.log(res);
+
+    for (const expense of res.data) {
+      showExpenseOnScreen(expense);
+      // console.log(expense)
+    }
+  } catch (err) {
+    console.log(err);
+  }  
+});
 async function showExpenseOnScreen(obj) {
-  const expensesList = document.getElementById("my-form");
+  const expensesList = document.getElementById("expenses-list");
   const listItem = document.createElement("li");
   listItem.textContent = `${obj.description}-${obj.expamount}-${obj.select}`;
 
   const deleteButton = document.createElement("input");
   deleteButton.type = "button";
-  deleteButton.value = "Delete Expense";
+  deleteButton.value = "Delete Expense"; 
   deleteButton.onclick = async () => {
     try {
       const token= localStorage.getItem('token');
@@ -101,27 +168,15 @@ async function showExpenseOnScreen(obj) {
     } catch (err) {
       console.log(err);
     }
-  };
-
-
-
-  // const EditButton = document.createElement("input");
-  // EditButton.type = "button";
-  // EditButton.value = "Edit";
-  // EditButton.onclick = async () => {
-  //   document.getElementById("descrip").value = obj.description;
-  //   document.getElementById("select").value = obj.select;
-  //   document.getElementById("expense").value = obj.expamount;
-  //   try {
-  //     await axios.delete(`${baseUrl}/delete-expense/${obj.id}`);
-  //     console.log('edited successfully');
-  //     expensesList.removeChild(listItem);
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // };
-
+  }; 
   listItem.appendChild(deleteButton);
-  // listItem.appendChild(EditButton);
   expensesList.appendChild(listItem);
 }
+
+async function showLeadersOnScreen(obj) {
+  const LeaderList = document.getElementById("leaderboard-list");
+  const listItem = document.createElement("li");
+  listItem.textContent = `'Name: ${obj.description}, Total Expense: ${obj.expamount}`;
+  LeaderList.appendChild(listItem);
+}
+

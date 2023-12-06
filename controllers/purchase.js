@@ -41,7 +41,7 @@ exports.UpdateTransaction = async (req, res, next) => {
        // if(payment_id.req.body=payment_id){
         console.log();
             await order.update({ paymentId: payment_id, status: status });
-            await req.user.update({ ispremiumuser: true });
+            await req.user.update({ isPremiumUser: true });
             return res.status(202).json({ success: true, message: "transaction DONE" });
     } catch (err) {
         const { payment_id, order_id,status } = req.body;

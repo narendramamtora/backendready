@@ -1,4 +1,5 @@
 const Sequelize=require('sequelize');
+const User = require('./user');
 const sequelize=require('../util/database');
 
 const Expense= sequelize.define('expense',{
@@ -12,5 +13,5 @@ const Expense= sequelize.define('expense',{
     description:Sequelize.STRING,
     select:Sequelize.STRING
 });
-
+Expense.belongsTo(User);    
 module.exports=Expense;
