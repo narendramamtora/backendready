@@ -1,7 +1,7 @@
-const { Sequelize } = require('sequelize');
+const sequelize=require('../util/database');
 const Expense = require('../models/expense');
 const User = require('../models/user');
-
+const e=require ('express');
 
 exports.getAllExpenses = async (req, res, next) => {
   try {
