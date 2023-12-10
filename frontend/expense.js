@@ -88,6 +88,7 @@ function replaceButtonWithMessage(res) {
     const showLeaderBoardButton = document.createElement("input");
     showLeaderBoardButton.type = "button";
     showLeaderBoardButton.value = "ShowLeaderBoard";
+
     showLeaderBoardButton.onclick = async () => {
       try {
         showLeaderBoard()
@@ -95,11 +96,11 @@ function replaceButtonWithMessage(res) {
         try {
           const token = localStorage.getItem('token');
           const res = await axios.get(`http://localhost:3000/premium/all-expenses`, { headers: { "Authorization": token } });
-          console.log('Expenses:', res.data.expenses);
           console.log('Users:', res.data.users);
-          for (const expenseWithUser of res.data.expenses) {
-            showLeadersOnScreen(expenseWithUser, res);
-          }
+          console.log('Response:', res);
+            showLeadersOnScreen(res);
+
+  
         } catch (err) {
           console.log(err);
         }
@@ -170,32 +171,14 @@ async function showExpenseOnScreen(obj) {
   expensesList.appendChild(listItem);
 }
 
-async function showLeadersOnScreen(obj, res) {
+async function showLeadersOnScreen(res) {
+  
   const LeaderList = document.getElementById("leaderboard-list");
-
-  if (LeaderList.children.length < res.data.users.length) {
+  for (const user of res.data.users) {
     const listItem = document.createElement("li");
-
-    const user = res.data.users.find(user => user.id === obj.userId);
-
-    const userTotalExpense = res.data.expenses.reduce((total, expense) => {
-      if (expense.userId === user.id) {
-        return total + expense.expamount;
-      }
-      return total;
-    }, 0);
-
-    listItem.textContent = `Name: ${user.name}, Total Expense: ${userTotalExpense}`;
-
+    const totalCost = user['total cost'] !== null ? user['total cost'] : 0;
+    listItem.textContent = `Name: ${user.name}, Total Expense: ${totalCost}`;
     LeaderList.appendChild(listItem);
-
-    const sortedItems = Array.from(LeaderList.children).sort((a, b) => {
-      const expenseA = parseInt(a.textContent.match(/Total Expense: (\d+)/)[1]);
-      const expenseB = parseInt(b.textContent.match(/Total Expense: (\d+)/)[1]);
-      return expenseB - expenseA;
-    });
-
-    LeaderList.innerHTML = '';
-    sortedItems.forEach(item => LeaderList.appendChild(item));
   }
 }
+

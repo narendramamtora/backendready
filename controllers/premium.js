@@ -1,19 +1,19 @@
-const sequelize=require('../util/database');
 const Expense = require('../models/expense');
 const User = require('../models/user');
-const e=require ('express');
-
+const sequelize=require('../util/database');
 exports.getAllExpenses = async (req, res, next) => {
   try {
     console.log('you are in the get all expenses controller/premium');
-    const userId = req.user.name;
-    console.log('under try control', userId);
-
-    // Fetch expenses with user information using a join
-    const expenses = await Expense.findAll();
-    const users= await User.findAll();
-
-    res.status(200).json({expenses,users});
+    const users= await User.findAll({
+      attributes:['id','name',[sequelize.fn('sum',sequelize.col('expenses.expamount')),'total cost']],
+      include: [{
+        model:Expense,
+        attributes:[]
+      }],
+      group:['user.id'],
+      order: [['total cost', 'DESC']]
+    });
+    res.status(200).json({users});
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: 'Fetching failed.' });
