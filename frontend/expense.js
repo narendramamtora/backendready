@@ -109,7 +109,6 @@ function replaceButtonWithMessage(res) {
       }
     };
     premiumContainer.appendChild(showLeaderBoardButton);
-    // Append the container at the desired location
     const expensesList = document.getElementById("my-form");
     expensesList.appendChild(premiumContainer);
   } else {
@@ -127,7 +126,6 @@ window.addEventListener("DOMContentLoaded", async () => {
     if (isPremiumUser) {
       replaceButtonWithMessage();
     } else {
-      // Show the Razorpay button
       const rzpButton = document.getElementById('rzpbutton');
       rzpButton.style.display = 'block';
     }
@@ -176,7 +174,7 @@ async function showLeadersOnScreen(res) {
   const LeaderList = document.getElementById("leaderboard-list");
   for (const user of res.data.users) {
     const listItem = document.createElement("li");
-    const totalCost = user['total cost'] !== null ? user['total cost'] : 0;
+    const totalCost = user.totalExpense !== null ? user.totalExpense : 0;
     listItem.textContent = `Name: ${user.name}, Total Expense: ${totalCost}`;
     LeaderList.appendChild(listItem);
   }

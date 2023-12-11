@@ -16,7 +16,7 @@ exports.getAllExpenses = async (req, res, next) => {
 };
 
 exports.postAddExpense = async (req, res, next) => {
-  const expAmount = req.body.expense;
+  const expAmount = parseFloat(req.body.expense);
   const description = req.body.descrip;
   const select = req.body.mselect;
   const userId = req.user.id;
@@ -25,18 +25,27 @@ exports.postAddExpense = async (req, res, next) => {
   console.log('*****',expAmount, description);
   
   try {
-    const result = await Expense.create({
+    const newExpense = await Expense.create({
       expamount: expAmount,
       description: description,
       select: select,
       userId:userId
-     
     });
-    console.log('Created expense:', result);
-    res.status(201).json(result);
+    const user = await User.findByPk(userId);
+
+    if (user) {
+      // Update the totalExpense field for the user
+      user.totalExpense = (user.totalExpense || 0) + expAmount;
+      await user.save();
+    } else {
+      console.error('User not found');
+    }
+    console.log('Created expense:', newExpense);
+    res.status(201).json(newExpense);
   } catch (err) {
     console.error('Error creating expense:', err);
   }
+
 };
 exports.postDeleteExpense = async (req, res, next) => {
   const expeId = req.params.expeId; // Use req.params.expeId
@@ -45,7 +54,19 @@ exports.postDeleteExpense = async (req, res, next) => {
     if (!expense) {
       return res.status(404).json({ message: ' not found.' });
     }
+
+
+    const expAmount = expense.expamount;
     const result = await expense.destroy();
+    const userId = expense.userId;
+    const user = await User.findByPk(userId);
+
+    if (user) {
+      user.totalExpense = (user.totalExpense || 0) - expAmount;
+      await user.save();
+    } else {
+      console.error('User not found');
+    }
     console.log('deleted successfully');
     res.status(200).json({ message: 'deleted successfully' });
   } catch (err) {
