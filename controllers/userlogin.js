@@ -5,7 +5,7 @@ const Jwt=require('jsonwebtoken');
 exports.createUserlogin = async (req, res, next) => {
     const Email = req.body.email;
     const Password = req.body.password;
-
+    console.log(Email);
     function generateToken(id,name){
         return Jwt.sign({userId:id,name:name}, 'secretkey')
     }

@@ -63,9 +63,8 @@ exports.postDeleteExpense = async (req, res, next) => {
       return res.status(404).json({ message: ' not found.' });
     }
 
-
     const expAmount = expense.expamount;
-//    const result = await expense.destroy();
+   const result = await expense.destroy();
     const userId = expense.userId;
     const user = await User.findByPk(userId);
 
