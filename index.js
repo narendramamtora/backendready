@@ -1,8 +1,11 @@
 const Sib=require('sib-api-v3-sdk')
+const { v4: uuidv4 } = require('uuid');
 require('dotenv').config()
-
+const linkid= uuidv4();
 const sendResetEmail = (EEmail) => {
 const client =Sib.ApiClient.instance
+
+console.log('first and from index.js',linkid);
 const apiKey = client.authentications['api-key'];
 apiKey.apiKey = process.env.API_KEY
 const tranEmailApi=new Sib.TransactionalEmailsApi()
@@ -20,12 +23,12 @@ tranEmailApi.sendTransacEmail({
     to:receivers,
     subject:"Reset your password",
     textContent:`
-    if {{params.role}} you forget the password then you can reset from here
+    click in this link {{params.role}} to reset your password
     `,
     params:{
-        role:'Frontend'
+        role:`http://localhost:3000/password/resetpassword/${linkid}`
     }
 })
 };
 
-module.exports =sendResetEmail ;
+module.exports ={sendResetEmail,linkid} ;
