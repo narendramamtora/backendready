@@ -68,6 +68,24 @@ document.getElementById('rzpbutton').onclick = async function (e) {
     alert('Something went wrong');
   });
 }
+
+const downloadButton = document.getElementById('downloadfile');
+downloadButton.addEventListener('click', async () => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await axios.get(`${baseUrl}/premium-status`, { headers: { "Authorization": token } });
+
+    if (response.data.isPremiumUser) {
+      window.location.href = 'file:///F:/javascript/01 Expense Tracker - Node.js Project/frontend/report.html';
+    } else {
+      alert('You need to be a premium user to download the report file.');
+    }
+  } catch (error) {
+    console.error('Error checking premium status:', error);
+  }
+});
+
+
 function showLeaderBoard() {
   const leaderboardHeading = document.getElementById("leaderboard");
   if (leaderboardHeading.style.display === "none" || leaderboardHeading.style.display === "") {
@@ -165,6 +183,8 @@ async function showExpenseOnScreen(obj) {
       console.log(err);
     }
   };
+
+
   listItem.appendChild(deleteButton);
   expensesList.appendChild(listItem);
 }
