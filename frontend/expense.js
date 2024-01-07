@@ -1,4 +1,5 @@
 const baseUrl = 'http://localhost:3000/expense';
+let currentPage = 1;
 
 async function Storedata(event) {
   event.preventDefault();
@@ -43,7 +44,7 @@ document.getElementById('rzpbutton').onclick = async function (e) {
   var options = {
     "key": response.data.key_id,
     "order_id": response.data.order.id,
-    //for handing success payment 
+    //for handling success payment 
     "handler": async function (response) {
       await axios.post('http://localhost:3000/purchase/updatetransactionstatus', {
         order_id: options.order_id,
@@ -85,7 +86,6 @@ downloadButton.addEventListener('click', async () => {
   }
 });
 
-
 function showLeaderBoard() {
   const leaderboardHeading = document.getElementById("leaderboard");
   if (leaderboardHeading.style.display === "none" || leaderboardHeading.style.display === "") {
@@ -113,12 +113,11 @@ function replaceButtonWithMessage(res) {
         console.log('you clicked show leader successfully');
         try {
           const token = localStorage.getItem('token');
-          const res = await axios.get(`http://localhost:3000/premium/all-expenses`, { headers: { "Authorization": token } });
+          await getExpenses(currentPage); // Fetch expenses for the current page
+          const res = await axios.get(`${baseUrl}/premium/all-expenses`, { headers: { "Authorization": token } });
           console.log('Users:', res.data.users);
           console.log('Response:', res);
-            showLeadersOnScreen(res);
-
-  
+          showLeadersOnScreen(res);
         } catch (err) {
           console.log(err);
         }
@@ -152,20 +151,64 @@ window.addEventListener("DOMContentLoaded", async () => {
   }
 
   try {
-    const token = localStorage.getItem('token');
-    const res = await axios.get(`${baseUrl}/all-expenses`, { headers: { "Authorization": token } });
-    console.log(res);
-
-    for (const expense of res.data) {
-      showExpenseOnScreen(expense);
-      // console.log(expense)
-    }
+    await getExpenses(currentPage); // Fetch expenses for the current page
   } catch (err) {
     console.log(err);
   }
 });
 
-async function showExpenseOnScreen(obj) {
+async function getExpenses(page) {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await axios.get(`${baseUrl}/all-expenses?page=${page}`, { headers: { "Authorization": token } });
+
+    const expensesList = document.getElementById("expenses-list");
+    expensesList.innerHTML = '';
+
+    for (const expense of response.data.expenses) {
+      showExpenseOnScreen(expense);
+    }
+
+    currentPage = page;
+
+    addExpensePagination(response.data.pagination);
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+function addExpensePagination(pagination) {
+  const paginationContainer = document.getElementById("pagination");
+  paginationContainer.innerHTML = '';
+
+  if (pagination.hasPreviousPage) {
+    const previousButton = createPaginationButton("Previous", pagination.previousPage);
+    paginationContainer.appendChild(previousButton);
+  }
+
+  for (let i = 1; i <= pagination.lastPage; i++) {
+    const pageButton = createPaginationButton(i, i);
+    paginationContainer.appendChild(pageButton);
+  }
+
+  if (pagination.hasNextPage) {
+    const nextButton = createPaginationButton("Next", pagination.nextPage);
+    paginationContainer.appendChild(nextButton);
+  }
+}
+
+function createPaginationButton(text, page) {
+  const button = document.createElement("button");
+  button.textContent = text;
+
+  button.addEventListener("click", async () => {
+    await getExpenses(page);
+  });
+
+  return button;
+}
+
+function showExpenseOnScreen(obj) {
   const expensesList = document.getElementById("expenses-list");
   const listItem = document.createElement("li");
   listItem.textContent = `${obj.description}-${obj.expamount}-${obj.select}`;
@@ -184,13 +227,11 @@ async function showExpenseOnScreen(obj) {
     }
   };
 
-
   listItem.appendChild(deleteButton);
   expensesList.appendChild(listItem);
 }
 
 async function showLeadersOnScreen(res) {
-  
   const LeaderList = document.getElementById("leaderboard-list");
   for (const user of res.data.users) {
     const listItem = document.createElement("li");
@@ -199,4 +240,3 @@ async function showLeadersOnScreen(res) {
     LeaderList.appendChild(listItem);
   }
 }
-
