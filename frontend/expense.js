@@ -1,6 +1,12 @@
 const baseUrl = 'http://localhost:3000/expense';
 let currentPage = 1;
+let expensesPerPage = 5;
 
+function updateExpensesPerPage() {
+  expensesPerPage = parseInt(document.getElementById('expensesPerPage').value);
+  localStorage.setItem('expensesPerPage', expensesPerPage);
+  getExpenses(1); // Fetch and display the first page of expenses
+}
 async function Storedata(event) {
   event.preventDefault();
   console.log('Submit button clicked');
@@ -156,11 +162,29 @@ window.addEventListener("DOMContentLoaded", async () => {
     console.log(err);
   }
 });
+window.addEventListener("DOMContentLoaded", async () => {
 
+  const expensesPerPageSelect = document.getElementById('expensesPerPage');
+  expensesPerPageSelect.addEventListener('change', updateExpensesPerPage);
+
+// Check for stored value in localStorage
+const storedExpensesPerPage = localStorage.getItem('expensesPerPage');
+if (storedExpensesPerPage) {
+  expensesPerPage = parseInt(storedExpensesPerPage);
+  document.getElementById('expensesPerPage').value = storedExpensesPerPage;
+}
+
+
+  try {
+    await getExpenses(currentPage);
+  } catch (err) {
+    console.log(err);
+  }
+});
 async function getExpenses(page) {
   try {
     const token = localStorage.getItem('token');
-    const response = await axios.get(`${baseUrl}/all-expenses?page=${page}`, { headers: { "Authorization": token } });
+    const response = await axios.get(`${baseUrl}/all-expenses?page=${page}&limit=${expensesPerPage}`, { headers: { "Authorization": token } });
 
     const expensesList = document.getElementById("expenses-list");
     expensesList.innerHTML = '';
@@ -176,6 +200,7 @@ async function getExpenses(page) {
     console.log(err);
   }
 }
+
 
 function addExpensePagination(pagination) {
   const paginationContainer = document.getElementById("pagination");

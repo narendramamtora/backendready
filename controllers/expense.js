@@ -7,7 +7,7 @@ exports.getAllExpenses = async (req, res, next) => {
   try {
     const userId = req.user.id;
     const page = req.query.page || 1; // Get the requested page from query parameters
-    const itemsPerPage = 5; // Adjust this based on the desired number of items per page
+    const itemsPerPage = parseInt(req.query.limit) || 5; // Adjust this based on the desired number of items per page
 
     const offset = (page - 1) * itemsPerPage;
     const expenses = await Expense.findAndCountAll({
