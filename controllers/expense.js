@@ -16,7 +16,7 @@ exports.getAllExpenses = async (req, res, next) => {
       offset: offset,
     });
 
-    const totalPages = Math.ceil(expenses.count / itemsPerPage);
+    const totalPages = Math.ceil(expenses.count / itemsPerPage); //here ceil will help to return 3.1 to 4 (it make an round figure)
 
     // Send back the expenses and pagination information
     res.status(200).json({

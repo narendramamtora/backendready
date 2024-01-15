@@ -3,9 +3,9 @@ let currentPage = 1;
 let expensesPerPage = 5;
 
 function updateExpensesPerPage() {
-  expensesPerPage = parseInt(document.getElementById('expensesPerPage').value);
-  localStorage.setItem('expensesPerPage', expensesPerPage);
-  getExpenses(1); // Fetch and display the first page of expenses
+  expensesPerPage = parseInt(document.getElementById('expensesPerPage').value); //i had added parseInt to convert the value in integer which is not compulsory
+  localStorage.setItem('expensesPerPage', expensesPerPage);  //.setItem will store it to local storage
+  getExpenses(1);  // Fetch and display the first page of expenses
 }
 async function Storedata(event) {
   event.preventDefault();
