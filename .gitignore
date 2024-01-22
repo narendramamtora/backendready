@@ -1,0 +1,7 @@
+node_modules
+.env
+access.log
+package.json
+package-lock.json
+.vscode/settings.json
+node_modules/.package-lock.json
