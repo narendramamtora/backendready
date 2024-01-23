@@ -82,7 +82,6 @@ ModelOrder.belongsTo(ModelSignup)
 ModelSignup.hasMany(ForgotPasswordRequest); 
 ForgotPasswordRequest.belongsTo(ModelSignup);
 
-
 sequelize
 .sync()
 //.sync({force:true})
