@@ -1,5 +1,6 @@
 const Sib=require('sib-api-v3-sdk')
 const { v4: uuidv4 } = require('uuid');
+const WEBSITE=process.env.WEBSITE
 require('dotenv').config()
 const linkid= uuidv4();
 const sendResetEmail = (EEmail) => {
@@ -26,7 +27,7 @@ tranEmailApi.sendTransacEmail({
     click in this link {{params.role}} to reset your password
     `,
     params:{
-        role:`http://localhost:3000/password/resetpassword/${linkid}`
+        role:`${WEBSITE}/password/resetpassword/${linkid}` // before we were using http://localhost:3000 in the place of WEBSITE
     }
 })
 };

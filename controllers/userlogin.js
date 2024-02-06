@@ -1,13 +1,14 @@
 const Users = require('../models/user');
 const bcrypt = require('bcrypt');
 const Jwt=require('jsonwebtoken');
+const TOKEN_SECRET=process.env.TOKEN_SECRET
 
 exports.createUserlogin = async (req, res, next) => {
     const Email = req.body.email;
     const Password = req.body.password;
     console.log(Email);
     function generateToken(id,name){
-        return Jwt.sign({userId:id,name:name}, 'secretkey')
+        return Jwt.sign({userId:id,name:name}, TOKEN_SECRET)
     }
     try {
         const existingUser = await Users.findOne({ where: { email: Email } });

@@ -1,6 +1,7 @@
 //the purpose of this code is to verify the secretkey and user info
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const TOKEN_SECRET=process.env.TOKEN_SECRET
 
 const authenticate = async (req, res, next) => {
     try {
@@ -8,7 +9,7 @@ const authenticate = async (req, res, next) => {
 //        console.log('this is the req header', req.headers);
         const token = req.header('Authorization');
 //        console.log("this is my token ",token);
-        const userPayload = jwt.verify(token, 'secretkey');
+        const userPayload = jwt.verify(token, TOKEN_SECRET);
         console.log('user Id  >>>> ', userPayload);
         const user = await User.findByPk(userPayload.userId);
 //        console.log('stringify',JSON.stringify(user));

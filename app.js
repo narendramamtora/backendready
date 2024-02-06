@@ -6,6 +6,8 @@ const helmet = require('helmet');
 const Compression = require('compression');
 const Morgan = require('morgan');
 const bodyParser = require('body-parser');
+const PORT= process.env.PORT
+
 
 //const mongoose = require('mongoose');
 //  const session = require('express-session');
@@ -87,7 +89,7 @@ sequelize
 .sync()
 //.sync({force:true})
 .then(result =>{
-    app.listen(3000)
+    app.listen(PORT)
 })
 .catch(err=>console.log(err))
 

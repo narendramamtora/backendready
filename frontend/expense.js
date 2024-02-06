@@ -1,4 +1,5 @@
 const baseUrl = 'http://localhost:3000/expense';
+//const WEBSITE=process.env.WEBSITE
 let currentPage = 1;
 let expensesPerPage = 5;
 
